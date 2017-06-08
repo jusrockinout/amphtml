@@ -60,6 +60,15 @@ window.AMP_CONFIG.errorReportingUrl;
 
 window.AMP_CONTEXT_DATA;
 
+// AMP-Analytics Cross-domain iframes
+let AMP_ANALYTICS_3P_MESSAGE_TYPE;
+let ampAnalytics3pReadyMessage;
+let ampAnalytics3pNewCreatives;
+let ampAnalytics3pNewCreative;
+let ampAnalytics3pEvents;
+let ampAnalytics3pEvent;
+let ampAnalytics3pResponse;
+
 // amp-viz-vega related externs.
 /**
  * @typedef {{spec: function(!JSONType, function())}}
