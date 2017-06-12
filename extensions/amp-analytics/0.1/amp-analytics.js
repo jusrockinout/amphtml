@@ -29,6 +29,7 @@ import {cryptoFor} from '../../../src/crypto';
 import {timerFor, viewerForDoc, xhrFor} from '../../../src/services';
 import {toggle} from '../../../src/style';
 import {isEnumValue} from '../../../src/types';
+import {AMP_ANALYTICS_3P_MESSAGE_TYPE} from '../../../src/3p-analytics-common';
 import {Activity} from './activity-impl';
 import {Cid} from './cid-impl';
 import {
@@ -205,7 +206,7 @@ export class AmpAnalytics extends AMP.BaseElement {
 
   /**
    * Handle successful fetching of (possibly) remote config.
-   * @return {!(Promise|undefined)}
+   * @return {!Promise|undefined}
    * @private
    */
   onFetchRemoteConfigSuccess_() {
@@ -235,8 +236,8 @@ export class AmpAnalytics extends AMP.BaseElement {
 
     if (this.config_['transport'] && this.config_['transport']['iframe']) {
       this.transport_.processCrossDomainIframe(this.getAmpDoc().win.document,
-        this.config_['transport'], (type, message) => {
-          this.processCrossDomainIframeResponse_(type, message);
+        this.config_['transport'], (type, responseMessage) => {
+          this.processCrossDomainIframeResponse_(type, responseMessage);
         });
     }
 
@@ -300,12 +301,14 @@ export class AmpAnalytics extends AMP.BaseElement {
   /**
    * Receives any response that may be sent from the cross-domain iframe
    * @param {!string} type The type parameter of the cross-domain iframe
-   * @param {Object} response The response message from the iframe
-   * was specified in the amp-analytics config
+   * @param {!../../../src/3p-analytics-common.AmpAnalytics3pResponse} response
+   * The response message from the iframe was specified in the amp-analytics
+   * config
    */
   processCrossDomainIframeResponse_(type, response) {
     const creativeUrl = /** @type {string} */ (this.win.document.baseURI);
-    ResponseMap.add(type, creativeUrl, response);
+    ResponseMap.add(type, creativeUrl,
+      response[AMP_ANALYTICS_3P_MESSAGE_TYPE.RESPONSE]);
   }
 
   /**
@@ -796,8 +799,8 @@ export class AmpAnalytics extends AMP.BaseElement {
    * Merges two objects. If the value is array or plain object, the values are
    * merged otherwise the value is overwritten.
    *
-   * @param {(Object|Array)} from Object or array to merge from
-   * @param {(Object|Array)} to Object or Array to merge into
+   * @param {Object|Array} from Object or array to merge from
+   * @param {Object|Array} to Object or Array to merge into
    * @param {boolean=} opt_predefinedConfig
    * @private
    */
@@ -839,8 +842,8 @@ export class AmpAnalytics extends AMP.BaseElement {
   }
 
   /**
-   * @param {!Object<string, Object<string, (string|Array<string>)>>} source1
-   * @param {!Object<string, Object<string, (string|Array<string>)>>} source2
+   * @param {!Object<string, Object<string, string|Array<string>>>} source1
+   * @param {!Object<string, Object<string, string|Array<string>>>} source2
    * @param {number=} opt_iterations
    * @param {boolean=} opt_noEncode
    * @return {!ExpansionOptions}
